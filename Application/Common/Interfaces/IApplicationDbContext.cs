@@ -1,6 +1,11 @@
-﻿namespace Application.Common.Interfaces;
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-public interface IApplicationDbContext
+namespace Application.Common.Interfaces;
+
+public interface IApplicationDbContext : IDisposable
 {
+    DbSet<TodoItemEntity> TodoItems { get; }
     
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

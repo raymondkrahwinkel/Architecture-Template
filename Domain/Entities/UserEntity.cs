@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class UserEntity
+namespace Domain.Entities;
+
+public class UserEntity : IdentityUser<Guid>
 {
     
 }
