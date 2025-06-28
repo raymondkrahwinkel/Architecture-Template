@@ -2,7 +2,4 @@
 
 namespace Domain.Entities;
 
-public class UserRoleEntity : IdentityRole<Guid>
-{
-    
-}
+public sealed class UserRoleEntity : IdentityRole<Guid>;

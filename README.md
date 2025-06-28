@@ -15,7 +15,7 @@ The `Application` folder contains the application logic, which is divided into s
 
 ### Infrastructure
 The `Infrastructure` folder contains the infrastructure logic for externals services such as email and database, which is divided into several subfolders:
-- Dataase - Contains the database context
+- Database - Contains the database context
 - Migrations - Contains the database migrations
 
 ### Web (Presentation)

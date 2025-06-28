@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class UserEntity : IdentityUser<Guid>
+public sealed class UserEntity : IdentityUser<Guid>
 {
-    
+    public ICollection<TodoItemEntity> TodoItems { get; set; } = new List<TodoItemEntity>();
 }
