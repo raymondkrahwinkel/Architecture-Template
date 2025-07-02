@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
+using Domain.Helpers;
 using Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,9 @@ public static class DependencyInjection
             .AddRoles<UserRoleEntity>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager();
+        
+        // autoload the services from the infrastructure layer
+        services.AddServices(typeof(DependencyInjection).Assembly);
         
         return services;
     }
