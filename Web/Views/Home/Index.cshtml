@@ -1,5 +1,33 @@
-﻿@{
+﻿@model List<TodoItemViewModel>
+
+@{
     ViewData["Title"] = "Home Page";
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+@if (Model.Count > 0)
+{
+    <table>
+        <thead>
+        <tr>
+            <td>Title</td>
+            <td>Due date</td>
+        </tr>
+        </thead>
+        
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">@item.Title</a>
+                </td>
+                <td>@item.DueDate?.ToLocalTime().ToString()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
 
 <div class="text-center">

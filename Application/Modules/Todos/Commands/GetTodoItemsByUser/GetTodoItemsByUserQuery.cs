@@ -1,28 +1,22 @@
 ﻿using Application.Common.Interfaces.Messaging;
 using Application.Common.Interfaces;
+using Application.Modules.Todos.Dtos;
 using Domain;
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Modules.Todos.Commands.GetTodoItemsByUser;
 
-public sealed record GetTodoItemsByUserQuery(Guid UserId) : IQuery<List<TodoItemEntity>>;
+public sealed record GetTodoItemsByUserQuery(Guid UserId) : IQuery<List<TodoItemDto>>;
 
-internal sealed class GetTodoItemsByUserQueryHandler : IQueryHandler<GetTodoItemsByUserQuery, List<TodoItemEntity>>
+internal sealed class GetTodoItemsByUserQueryHandler(IApplicationDbContext dbContext)
+    : IQueryHandler<GetTodoItemsByUserQuery, List<TodoItemDto>>
 {
-    private readonly IApplicationDbContext _dbContext;
-
-    public GetTodoItemsByUserQueryHandler(IApplicationDbContext dbContext)
+    public async Task<Result<List<TodoItemDto>>> HandleAsync(GetTodoItemsByUserQuery request, CancellationToken cancellationToken)
     {
-        _dbContext = dbContext;
-    }
-
-    public async Task<Result<List<TodoItemEntity>>> HandleAsync(GetTodoItemsByUserQuery request, CancellationToken cancellationToken)
-    {
-        var result = await _dbContext.TodoItems
+        var result = await dbContext.TodoItems
             .Where(t => t.UserId == request.UserId)
             .ToListAsync(cancellationToken: cancellationToken);
 
-        return new(result);
+        return new Result<List<TodoItemDto>>(result.Select(TodoItemDto.FromEntity).ToList());
     }
 }

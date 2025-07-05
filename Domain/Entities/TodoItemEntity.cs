@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class TodoItemEntity
+public sealed class TodoItemEntity : Entity
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     
     public Guid UserId { get; set; }
     public UserEntity User { get; set; } = null!;

@@ -1,10 +1,11 @@
 ﻿using Application.Common.Interfaces.Messaging;
 using Domain;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Common.Services.Implementations;
 
-public class CqrsSender : ICqrsSender
+internal sealed class CqrsSender : ICqrsSender
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -77,7 +78,7 @@ public class CqrsSender : ICqrsSender
             return Result<TResult>.ValidationFailure(validationResults);
         }
         
-        var type = typeof(ICommandHandler<>).MakeGenericType(request.GetType(), typeof(TResult));
+        var type = typeof(ICommandHandler<,>).MakeGenericType(request.GetType(), typeof(TResult));
         var handler = _serviceProvider.GetRequiredService(type);
         
         // Use reflection to invoke the HandleAsync method
@@ -99,6 +100,33 @@ public class CqrsSender : ICqrsSender
 
     private async Task<List<ValidationResult>> _ExecuteValidationAsync(IRequest request, CancellationToken cancellationToken)
     {
+        // check if we have a fluent validation available for the request
+        var fluentValidationType = typeof(IValidator<>).MakeGenericType(request.GetType());
+        var fluentValidator = _serviceProvider.GetService(fluentValidationType);
+        if (fluentValidator != null)
+        {
+            // invoke the fluent validation
+            var fluentValidateMethod = fluentValidationType.GetMethod("ValidateAsync");
+            if (fluentValidateMethod == null)
+            {
+                throw new InvalidOperationException($"Validator for {fluentValidationType.Name} does not implement ValidateAsync method.");
+            }
+
+            var fluentValidatorTask = fluentValidateMethod.Invoke(fluentValidator, [request, cancellationToken]);
+            if (fluentValidatorTask is null)
+            {
+                return [];
+            }
+            
+            await (Task)fluentValidatorTask;
+            var validationResult = (FluentValidation.Results.ValidationResult?)fluentValidateMethod.ReturnType.GetProperty("Result")?.GetValue(fluentValidatorTask);
+            if (validationResult?.IsValid != true)
+            {
+                return validationResult?.Errors.Select(e => new ValidationResult(e.PropertyName, e.ErrorMessage))
+                    .ToList() ?? [];
+            }
+        }
+        
         var validatorType = typeof(IValidationHandler<>).MakeGenericType(request.GetType());
         var validatorHandler = _serviceProvider.GetService(validatorType);
         if (validatorHandler == null) return [];

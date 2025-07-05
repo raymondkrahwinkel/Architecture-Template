@@ -1,11 +1,7 @@
-﻿using Domain.Abstractions;
-using Microsoft.AspNetCore.Identity;
+﻿namespace Domain.Abstractions;
 
-namespace Domain.Entities;
-
-public sealed class UserRoleEntity : IdentityRole<Guid>, IEntity
+public abstract class Entity : IEntity
 {
-    #region Domain Events
     private readonly List<IDomainEvent> _domainEvents = [];
 
     public void AddDomainEvent(IDomainEvent domainEvent)
@@ -27,5 +23,4 @@ public sealed class UserRoleEntity : IdentityRole<Guid>, IEntity
     {
         return _domainEvents;
     }
-    #endregion
 }

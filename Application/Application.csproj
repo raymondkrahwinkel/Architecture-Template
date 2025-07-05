@@ -19,8 +19,6 @@
     
     <ItemGroup>
       <Folder Include="Common\Repositories\" />
-      <Folder Include="Modules\Todos\Commands\AddOrUpdateTodoItem\" />
-      <Folder Include="Modules\Todos\Dtos\" />
       <Folder Include="Modules\Todos\Repositories\" />
       <Folder Include="Modules\Todos\Services\" />
     </ItemGroup>

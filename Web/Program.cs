@@ -1,4 +1,5 @@
 using Application;
+using Application.Common.Interfaces;
 using Domain;
 using Infrastructure;
 
@@ -39,5 +40,39 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
     .WithStaticAssets();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/migrate", async (CancellationToken cancellationToken = default) =>
+    {
+        // create new scope for the migration operation
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+
+            // Ensure the database is created and migrations are applied.
+            await dbContext.MigrateAsync(cancellationToken);
+
+            // Seed the identity data.
+            await dbContext.SeedAsync(cancellationToken);
+        }
+
+        return Results.Ok("Database migrated and seeded.");
+    });
+}
+else
+{
+    // create new scope for the migration operation
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+
+        // Ensure the database is created and migrations are applied.
+        await dbContext.MigrateAsync();
+
+        // Seed the identity data.
+        await dbContext.SeedAsync();
+    }
+}
 
 app.Run();

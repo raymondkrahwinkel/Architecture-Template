@@ -1,0 +1,20 @@
+﻿@model TodoItemViewModel
+
+@{
+    ViewData["Title"] = "Add Todo Item";
+}
+
+<form method="post" asp-action="Add" asp-antiforgery="true">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control"/>
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
